@@ -9,9 +9,9 @@ TGAImage::TGAImage() : data(NULL), width(0), height(0), bytespp(0) {
 }
 
 TGAImage::TGAImage(int w, int h, int bpp) : data(NULL), width(w), height(h), bytespp(bpp) {
-	unsigned long nbytes = width*height*bytespp;
+	unsigned long nbytes = width*height*bytespp;//allocate memory for color map (Hight * Width = Num Of pixels |* bytes per pixel = bytes for color map )
 	data = new unsigned char[nbytes];
-	memset(data, 0, nbytes);
+	memset(data, 0, nbytes);//fill field of data by 0
 }
 
 TGAImage::TGAImage(const TGAImage &img) {
@@ -158,11 +158,11 @@ bool TGAImage::write_tga_file(const char *filename, bool rle) {
 	}
 	TGA_Header header;
 	memset((void *)&header, 0, sizeof(header));
-	header.bitsperpixel = bytespp<<3;
+	header.bitsperpixel = bytespp<<3;//Circular shift(побитовый сдвиг) 00000100 -> 0010000 (4 -> 32)
 	header.width  = width;
 	header.height = height;
-	header.datatypecode = (bytespp==GRAYSCALE?(rle?11:3):(rle?10:2));
-	header.imagedescriptor = 0x20; // top-left origin
+	header.datatypecode = (bytespp==GRAYSCALE?(rle?11:3):(rle?10:2));//rle  - is image compresed? Wikipedia( Tga File format - Header)
+	header.imagedescriptor = 0x20; // ??top-left origin?? Wikipedia( Tga File format - Header) 0x20 - 32 -  0010000 
 	out.write((char *)&header, sizeof(header));
 	if (!out.good()) {
 		out.close();
@@ -206,12 +206,12 @@ bool TGAImage::write_tga_file(const char *filename, bool rle) {
 }
 
 // TODO: it is not necessary to break a raw chunk for two equal pixels (for the matter of the resulting size)
-bool TGAImage::unload_rle_data(std::ofstream &out) {
-	const unsigned char max_chunk_length = 128;
-	unsigned long npixels = width*height;
+bool TGAImage::unload_rle_data(std::ofstream &out) {//unload the compesed image map
+	const unsigned char max_chunk_length = 128;//max длинна куска
+	unsigned long npixels = width*height; 
 	unsigned long curpix = 0;
 	while (curpix<npixels) {
-		unsigned long chunkstart = curpix*bytespp;
+		unsigned long chunkstart = curpix*bytespp;//начальный кусок 
 		unsigned long curbyte = curpix*bytespp;
 		unsigned char run_length = 1;
 		bool raw = true;

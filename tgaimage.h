@@ -62,10 +62,10 @@ struct TGAColor {
 
 class TGAImage {
 protected:
-	unsigned char* data;
+	unsigned char* data;//поле изображени€ (карта цветов)
 	int width;
 	int height;
-	int bytespp;
+	int bytespp;//байт на пиксел дл€ GRAYSCALE=1, RGB=3, RGBA=4 
 
 	bool   load_rle_data(std::ifstream &in);
 	bool unload_rle_data(std::ofstream &out);
